@@ -56,6 +56,7 @@ public class Circulo extends Application
                 new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent event) {
                         circle.setTranslateX(circle.getTranslateX() + 1);
+                        circle.setTranslateY(circle.getTranslateX() + 1);
                     }
                 });
         timeline.getKeyFrames().
