@@ -44,7 +44,6 @@ public class Circulo extends Application
         circle.setCenterY(250.0f);
         circle.setFill(Color.RED);
         circle.setRadius(20.0f);
-
         //coloca el círculo dentro del contenedor root.
         root.getChildren().add(circle);
 
@@ -62,7 +61,13 @@ public class Circulo extends Application
         timeline.getKeyFrames().
         add(kf);
         timeline.play();
-        /////////////////////////////////////////////////
+        /////////////////////////////////////////////////CREACIÓN DE UN BOTÓN
+        Button boton = new Button("Stop");
+        boton.setDefaultButton(true);
+        boton.setLayoutX(15);
+        boton.setLayoutY(15);
+        boton.setPrefSize(80, 18);
+        root.getChildren().add(boton);
 
         ventana.show();
     }
