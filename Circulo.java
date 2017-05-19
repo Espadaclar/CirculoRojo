@@ -47,20 +47,6 @@ public class Circulo extends Application
         //coloca el círculo dentro del contenedor root.
         root.getChildren().add(circle);
 
-        //////////////////////////////PARA DESPLAZAR EL CÍRCULO.
-        Timeline timeline = new Timeline();
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.setAutoReverse(true);
-        KeyFrame kf = new KeyFrame(Duration.seconds(.01),
-                new EventHandler<ActionEvent>() {
-                    public void handle(ActionEvent event) {
-                        circle.setTranslateX(circle.getTranslateX() + 1);
-                        circle.setTranslateY(circle.getTranslateX() + 1);
-                    }
-                });
-        timeline.getKeyFrames().
-        add(kf);
-        timeline.play();
         /////////////////////////////////////////////////CREACIÓN DE UN BOTÓN
         Button boton = new Button("Stop");
         boton.setDefaultButton(true);
@@ -69,6 +55,25 @@ public class Circulo extends Application
         boton.setPrefSize(80, 18);
         root.getChildren().add(boton);
 
+        //////////////////////////////PARA DESPLAZAR EL CÍRCULO.        
+        boton.setOnAction(event -> {  
+                Timeline timeline = new Timeline();
+                timeline.setCycleCount(Timeline.INDEFINITE);
+                timeline.setAutoReverse(true);
+                KeyFrame kf = new KeyFrame(Duration.seconds(.01),
+                        new EventHandler<ActionEvent>() {
+                            public void handle(ActionEvent event) {
+                                circle.setTranslateX(circle.getTranslateX() + 1);
+                                circle.setTranslateY(circle.getTranslateX() + 1);
+                            }
+                        });
+                timeline.getKeyFrames().
+                add(kf);
+                timeline.play();
+
+            });
+
+        /////////////////////////////////////
         ventana.show();
     }
 
