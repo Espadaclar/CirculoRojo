@@ -70,7 +70,8 @@ public class Circulo extends Application
                 timeline.getKeyFrames().add(kf);
 
                 timeline.play();
-
+                
+                //////////////////////  PARA ACTIVAR Y DESACTIVAR EL BOTÓN CUANDO ÉSTE ESTÁ ACTIVADO.
                 boton.setOnAction(event2 -> {
                         if (timeline.getStatus() == Status.PAUSED){
                             timeline.play();
