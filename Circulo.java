@@ -13,7 +13,7 @@ import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 
 import javafx.scene.control.Button;
-
+import javafx.animation.Animation.Status;
 // import javafx.animation.TranslateTransition;
 // import javafx.util.Duration;
 // import javafx.event.EventHandler;
@@ -55,26 +55,35 @@ public class Circulo extends Application
         boton.setPrefSize(80, 18);
         root.getChildren().add(boton);
 
-        //////////////////////////////PARA DESPLAZAR EL CÍRCULO.        
-        boton.setOnAction(event -> {  
+        //////////////////////////////PARA DESPLAZAR EL CÍRCULO CUANDO ES ACTIVA EL BOTÓN. 
+        boton.setOnAction(event -> {
+
                 Timeline timeline = new Timeline();
                 timeline.setCycleCount(Timeline.INDEFINITE);
                 timeline.setAutoReverse(true);
-                KeyFrame kf = new KeyFrame(Duration.seconds(.01),
-                        new EventHandler<ActionEvent>() {
+                KeyFrame kf = new KeyFrame(Duration.seconds(.01), new EventHandler<ActionEvent>() {
                             public void handle(ActionEvent event) {
                                 circle.setTranslateX(circle.getTranslateX() + 1);
                                 circle.setTranslateY(circle.getTranslateX() + 1);
                             }
                         });
-                timeline.getKeyFrames().
-                add(kf);
+                timeline.getKeyFrames().add(kf);
+
                 timeline.play();
 
-            });
+                boton.setOnAction(event2 -> {
+                        if (timeline.getStatus() == Status.PAUSED){
+                            timeline.play();
+                        }
+                        else{
+                            timeline.pause();
+                        }
+                    });
 
+            } );
         /////////////////////////////////////
         ventana.show();
     }
 
 }
+
