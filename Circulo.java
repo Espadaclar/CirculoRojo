@@ -99,7 +99,29 @@ public class Circulo extends Application
                             velocidadY = -velocidadY;
                         }
 
-                        
+                        double rec_X = rectangulo.getBoundsInParent().getMaxX();
+                        //double rec_Y = rectangulo.getBoundsInParent().getMaxY();
+                        double rec_MMX = rectangulo.getBoundsInParent().getMinX();
+                        double rec_MMY = rectangulo.getBoundsInParent().getMinY();
+
+                        double cir_X = circle.getBoundsInParent().getMaxX();
+                        double cir_MMX = circle.getBoundsInParent().getMinX();
+                        double cir_MMY = circle.getBoundsInParent().getMinY(); 
+
+                        double cir_Y = circle.getBoundsInParent().getMaxY(); //SUMA 20 AL CENTRO EN EL EJE Y. SERÁ EL PUNTO DE COLISIÓN.
+                        if( (velocidadY == 1 && velocidadX == -1) && (cir_Y == rec_MMY) && 
+                        ( cir_Y < rec_X && cir_Y > rec_MMX  ) ){
+                            velocidadY = -velocidadY;
+                            velocidadX = -velocidadX;
+                        }
+                        else if( (velocidadY == 1 && velocidadX == 1) && (cir_Y == rec_MMY) &&
+                        ( cir_Y < rec_X && cir_Y > rec_MMX  ) ){
+                            velocidadY = -velocidadY;
+                            velocidadX = velocidadX;
+                        }
+                        System.out.println("Rectángulo rec_X ; " +rec_X+ " rec_MMX " +rec_MMX+ 
+                            " rec_MMY " +rec_MMY+ "   círculo cir_X; " +cir_X+ " cir_MMX " +cir_MMX + " cir_Y " +cir_Y+ " cir_MMY" +cir_MMY);  
+
                         //PARA QUE SE MUEVA LA BARRA .
                         rectangulo.setTranslateX(rectangulo.getTranslateX() + velocidadEnBarra);
                         //para controlar la barra con los botones de izquierda/derecha.
