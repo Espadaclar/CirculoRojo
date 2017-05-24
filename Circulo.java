@@ -15,8 +15,9 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.animation.Animation.Status;
 import java.util.Random;
-// import javafx.util.Duration;
-// import javafx.event.EventHandler;
+import javafx.scene.shape.Rectangle;
+
+import javafx.scene.input.KeyCode;
 // import javafx.event.ActionEvent;
 /**
  * Write a description of class Circulo here.
@@ -26,8 +27,14 @@ import java.util.Random;
  */
 public class Circulo extends Application 
 {
+    private Circle cicle;
+    private Rectangle rectangulo;
+    //velocidad del círculo.
     private int velocidadX = 1;
     private int velocidadY = 1;
+    //velocidad de la barra.
+    private int velocidadEnBarra;
+
     public static void main(String[] args){
         //Esto se utiliza para ejecutar la aplicación 
         //es como el new Contructor()
@@ -37,7 +44,7 @@ public class Circulo extends Application
     public void start(Stage ventana){//parámetro que va ha ser la ventan de la aplicación
         Group root = new Group(); //contenedor que colocamos dentro de la escena.
 
-        Scene escena = new Scene(root, 450, 450, Color.BLUE);//Se crea la escena con el contenedor que contiene los objetos.
+        Scene escena = new Scene(root, 500, 500, Color.YELLOW);//Se crea la escena con el contenedor que contiene los objetos.
         ventana.setScene(escena);//pasamos al parámetro ventana el objeto escena.
 
         //////////////////////////////para pasar coordenadas aleatorias a la situación inicias del círculo:
@@ -49,11 +56,21 @@ public class Circulo extends Application
         Circle circle = new Circle();
         circle.setCenterX(coordenadaX);
         circle.setCenterY(coordenadaY);
-        //circle.setCenterY(250.0f);
+        circle.setCenterY(250.0f);
         circle.setFill(Color.RED);
         circle.setRadius(20.0f);
         //coloca el círculo dentro del contenedor root.
         root.getChildren().add(circle);
+
+        //se crea un rectángulo
+        Rectangle rectangulo = new Rectangle();
+        rectangulo.setLayoutY(470);
+        rectangulo.setLayoutX(220);
+        rectangulo.setWidth(150);
+        rectangulo.setHeight(20);
+        root.getChildren().add(rectangulo);
+        rectangulo.setFill(Color.BLUE);
+        //
 
         /////////////////////////////////////////////////CREACIÓN DE UN BOTÓN
         Button boton = new Button("Stop / Move");
@@ -63,48 +80,55 @@ public class Circulo extends Application
         boton.setPrefSize(100, 18);
         root.getChildren().add(boton);
 
-        //////////////////////////////PARA DESPLAZAR EL CÍRCULO CUANDO ES ACTIVA EL BOTÓN. 
-        boton.setOnAction(event -> {
+        Timeline timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.setAutoReverse(true);
+        //define un valor de movimiento en los ejes x / y.
+        KeyFrame kf = new KeyFrame(Duration.seconds(.002), new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent event) {
 
-                Timeline timeline = new Timeline();
-                timeline.setCycleCount(Timeline.INDEFINITE);
-                timeline.setAutoReverse(true);
-                //define un valor de movimiento en los ejes x / y.
-                KeyFrame kf = new KeyFrame(Duration.seconds(.001), new EventHandler<ActionEvent>() {
-                            public void handle(ActionEvent event) {
+                        circle.setTranslateX(circle.getTranslateX() + velocidadX);
+                        circle.setTranslateY(circle.getTranslateY() + velocidadY);
+                        if(circle.getBoundsInParent().getMinX() <= 0 || 
+                        circle.getBoundsInParent().getMaxX() >= (escena.getWidth()) ){
+                            velocidadX = -velocidadX;
 
-                                circle.setTranslateX(circle.getTranslateX() + velocidadX);
-                                circle.setTranslateY(circle.getTranslateX() + velocidadY);
-                                if(circle.getBoundsInParent().getMinX() <= 10 || 
-                                circle.getBoundsInParent().getMaxX() >= (escena.getWidth() - 10) ){
-                                    velocidadX = -velocidadX;
-                                }
-                                if(circle.getBoundsInParent().getMinY() <=  50 || 
-                                circle.getBoundsInParent().getMaxY() >= (escena.getHeight() - 50) ){
-                                    velocidadY = -velocidadY;
-                                }
-                                
-                                
-                            }
-                        });
-                timeline.getKeyFrames().add(kf);
-
-                timeline.play();
-
-                //////////////////////  PARA ACTIVAR Y DESACTIVAR EL BOTÓN CUANDO ÉSTE ESTÁ ACTIVADO.
-                boton.setOnAction(event2 -> {
-                        if (timeline.getStatus() == Status.PAUSED){
-                            timeline.play();
                         }
-                        else{
-                            timeline.pause();
+                        if(circle.getBoundsInParent().getMinY() <=  0 || 
+                        circle.getBoundsInParent().getMaxY() >= (escena.getHeight()) ){
+                            velocidadY = -velocidadY;
                         }
-                    });
 
-            } );
-        /////////////////////////////////////
+                        
+                        //PARA QUE SE MUEVA LA BARRA .
+                        rectangulo.setTranslateX(rectangulo.getTranslateX() + velocidadEnBarra);
+                        //para controlar la barra con los botones de izquierda/derecha.
+                        root.setOnKeyPressed(event2 ->{
+                                if(event2.getCode() == KeyCode.RIGHT){
+                                    velocidadEnBarra = 1;
+                                }
+                                else if(event2.getCode() == KeyCode.LEFT){
+                                    velocidadEnBarra = -1;
+                                }
+                            });
+
+                        /////para que la barra no se salga de los límites de la escena.
+                        if(rectangulo.getBoundsInParent().getMinX() <= 0 || 
+                        rectangulo.getBoundsInParent().getMaxX() >= (escena.getWidth()) ){
+                            velocidadEnBarra = -velocidadEnBarra;
+
+                        }
+                    }
+                });
+
+        timeline.getKeyFrames().add(kf);
+        timeline.play();
+
         ventana.show();
     }
 
+    public void zgetCoordenadas(){
+
+    }
 }
 
