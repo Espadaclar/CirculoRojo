@@ -109,13 +109,11 @@ public class Circulo extends Application
                         double cir_MMY = circle.getBoundsInParent().getMinY(); 
 
                         double cir_Y = circle.getBoundsInParent().getMaxY(); //SUMA 20 AL CENTRO EN EL EJE Y. SERÁ EL PUNTO DE COLISIÓN.
-                        if( (velocidadY == 1 && velocidadX == -1) && (cir_Y == rec_MMY) && 
-                        ( cir_Y < rec_X && cir_Y > rec_MMX  ) ){
+                        if( (velocidadY == 1 && velocidadX == -1) && (cir_Y == rec_MMY)  ){
                             velocidadY = -velocidadY;
-                            velocidadX = -velocidadX;
+                            velocidadX = velocidadX;
                         }
-                        else if( (velocidadY == 1 && velocidadX == 1) && (cir_Y == rec_MMY) &&
-                        ( cir_Y < rec_X && cir_Y > rec_MMX  ) ){
+                        else if( (velocidadY == 1 && velocidadX == 1) && (cir_Y == rec_MMY) ){
                             velocidadY = -velocidadY;
                             velocidadX = velocidadX;
                         }
@@ -153,4 +151,3 @@ public class Circulo extends Application
 
     }
 }
-
