@@ -51,27 +51,28 @@ public class Circulo extends Application
         Random ale = new Random();
         int coordenadaX = ale.nextInt(430) +10; 
         int coordenadaY = ale.nextInt(430) +10; 
-
+        float RADIO = 20.0f;
         //Se crea el círculo
         Circle circle = new Circle();
         circle.setCenterX(coordenadaX);
         circle.setCenterY(coordenadaY);
         circle.setCenterY(250.0f);
         circle.setFill(Color.RED);
-        circle.setRadius(20.0f);
+        circle.setRadius(RADIO);
         //coloca el círculo dentro del contenedor root.
         root.getChildren().add(circle);
 
         //se crea un rectángulo
         Rectangle rectangulo = new Rectangle();
-        rectangulo.setLayoutY(470);
+        rectangulo.setLayoutY(600);
         rectangulo.setLayoutX(220);
+        //         rectangulo.setLayoutY(470);
+        //         rectangulo.setLayoutX(220);
         rectangulo.setWidth(150);
         rectangulo.setHeight(20);
         root.getChildren().add(rectangulo);
         rectangulo.setFill(Color.BLUE);
         //
-
         /////////////////////////////////////////////////CREACIÓN DE UN BOTÓN
         Button boton = new Button("Stop / Move");
         boton.setDefaultButton(true);
@@ -84,7 +85,7 @@ public class Circulo extends Application
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.setAutoReverse(true);
         //define un valor de movimiento en los ejes x / y.
-        KeyFrame kf = new KeyFrame(Duration.seconds(.002), new EventHandler<ActionEvent>() {
+        KeyFrame kf = new KeyFrame(Duration.seconds(.001), new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent event) {
 
                         circle.setTranslateX(circle.getTranslateX() + velocidadX);
@@ -100,25 +101,29 @@ public class Circulo extends Application
                         }
 
                         double rec_X = rectangulo.getBoundsInParent().getMaxX();
-                        //double rec_Y = rectangulo.getBoundsInParent().getMaxY();
                         double rec_MMX = rectangulo.getBoundsInParent().getMinX();
                         double rec_MMY = rectangulo.getBoundsInParent().getMinY();
 
-                        double cir_X = circle.getBoundsInParent().getMaxX();
-                        double cir_MMX = circle.getBoundsInParent().getMinX();
+                        double cir_X = circle.getBoundsInParent().getMaxX() -RADIO;
+                        double cir_MMX = circle.getBoundsInParent().getMinX() +RADIO;
                         double cir_MMY = circle.getBoundsInParent().getMinY(); 
+                        double cir_Y = circle.getBoundsInParent().getMaxY();
 
-                        double cir_Y = circle.getBoundsInParent().getMaxY(); //SUMA 20 AL CENTRO EN EL EJE Y. SERÁ EL PUNTO DE COLISIÓN.
+                        //SI LAS VARIABLES DEL CÍRC, SE RELACIONAN CON LAS VARIABLES DEL RECT, EL CÍRCULO REBOTA SOBRE LA BARRA.
                         if( (velocidadY == 1 && velocidadX == -1) && (cir_Y == rec_MMY)  ){
-                            velocidadY = -velocidadY;
-                            velocidadX = velocidadX;
+                            if( cir_X < rec_X && cir_MMX > rec_MMX ){
+                                velocidadY = -velocidadY;
+                                velocidadX = velocidadX;
+                            }
                         }
-                        else if( (velocidadY == 1 && velocidadX == 1) && (cir_Y == rec_MMY) ){
-                            velocidadY = -velocidadY;
-                            velocidadX = velocidadX;
+                        else {
+                            if( (velocidadY == 1 && velocidadX == 1) && (cir_Y == rec_MMY) ){
+                                if( cir_X < rec_X && cir_MMX> rec_MMX ){
+                                    velocidadY = -velocidadY;
+                                    velocidadX = velocidadX;
+                                }
+                            }
                         }
-                        System.out.println("Rectángulo rec_X ; " +rec_X+ " rec_MMX " +rec_MMX+ 
-                            " rec_MMY " +rec_MMY+ "   círculo cir_X; " +cir_X+ " cir_MMX " +cir_MMX + " cir_Y " +cir_Y+ " cir_MMY" +cir_MMY);  
 
                         //PARA QUE SE MUEVA LA BARRA .
                         rectangulo.setTranslateX(rectangulo.getTranslateX() + velocidadEnBarra);
@@ -133,21 +138,17 @@ public class Circulo extends Application
                             });
 
                         /////para que la barra no se salga de los límites de la escena.
-                        if(rectangulo.getBoundsInParent().getMinX() <= 0 || 
-                        rectangulo.getBoundsInParent().getMaxX() >= (escena.getWidth()) ){
+                        if(rectangulo.getBoundsInParent().getMinX() <= 0 ){
                             velocidadEnBarra = -velocidadEnBarra;
-
+                        }
+                        else if( rectangulo.getBoundsInParent().getMaxX() >= (escena.getWidth()) ){
+                            velocidadEnBarra = -velocidadEnBarra;
                         }
                     }
                 });
 
         timeline.getKeyFrames().add(kf);
         timeline.play();
-
         ventana.show();
-    }
-
-    public void zgetCoordenadas(){
-
     }
 }
