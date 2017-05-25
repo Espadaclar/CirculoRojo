@@ -18,7 +18,7 @@ import java.util.Random;
 import javafx.scene.shape.Rectangle;
 
 import javafx.scene.input.KeyCode;
-// import javafx.event.ActionEvent;
+ import javafx.scene.control.Label;
 /**
  * Write a description of class Circulo here.
  * 
@@ -44,7 +44,7 @@ public class Circulo extends Application
     public void start(Stage ventana){//parámetro que va ha ser la ventan de la aplicación
         Group root = new Group(); //contenedor que colocamos dentro de la escena.
 
-        Scene escena = new Scene(root, 500, 500, Color.YELLOW);//Se crea la escena con el contenedor que contiene los objetos.
+        Scene escena = new Scene(root, 500, 700, Color.YELLOW);//Se crea la escena con el contenedor que contiene los objetos.
         ventana.setScene(escena);//pasamos al parámetro ventana el objeto escena.
 
         //////////////////////////////para pasar coordenadas aleatorias a la situación inicias del círculo:
@@ -69,7 +69,7 @@ public class Circulo extends Application
         //         rectangulo.setLayoutY(470);
         //         rectangulo.setLayoutX(220);
         rectangulo.setWidth(150);
-        rectangulo.setHeight(20);
+        rectangulo.setHeight(10);
         root.getChildren().add(rectangulo);
         rectangulo.setFill(Color.BLUE);
         //
@@ -95,9 +95,19 @@ public class Circulo extends Application
                             velocidadX = -velocidadX;
 
                         }
-                        if(circle.getBoundsInParent().getMinY() <=  0 || 
-                        circle.getBoundsInParent().getMaxY() >= (escena.getHeight()) ){
+
+                        else if(circle.getBoundsInParent().getMinY() <=  0)
+                        {
                             velocidadY = -velocidadY;
+                        }
+                        else if(circle.getBoundsInParent().getMaxY() >= (escena.getHeight()))
+                        {
+                            Label label1 = new Label();
+                            label1.setText(" -- GANE  OVER -- ");        
+
+                            label1.setLayoutX(290);
+                            label1.setLayoutY(350);
+                            root.getChildren().add(label1);
                         }
 
                         double rec_X = rectangulo.getBoundsInParent().getMaxX();
@@ -109,7 +119,7 @@ public class Circulo extends Application
                         double cir_MMY = circle.getBoundsInParent().getMinY(); 
                         double cir_Y = circle.getBoundsInParent().getMaxY();
 
-                        //SI LAS VARIABLES DEL CÍRC, SE RELACIONAN CON LAS VARIABLES DEL RECT, EL CÍRCULO REBOTA SOBRE LA BARRA.
+                        //SI LAS VARIABLES DEL CIR, SE RELACIONAN CON LAS VARIABLES DEL RECT, EL C�?RCULO REBOTA SOBRE LA BARRA.
                         if( (velocidadY == 1 && velocidadX == -1) && (cir_Y == rec_MMY)  ){
                             if( cir_X < rec_X && cir_MMX > rec_MMX ){
                                 velocidadY = -velocidadY;
@@ -139,10 +149,10 @@ public class Circulo extends Application
 
                         /////para que la barra no se salga de los límites de la escena.
                         if(rectangulo.getBoundsInParent().getMinX() <= 0 ){
-                            velocidadEnBarra = -velocidadEnBarra;
+                            velocidadEnBarra = 0;
                         }
                         else if( rectangulo.getBoundsInParent().getMaxX() >= (escena.getWidth()) ){
-                            velocidadEnBarra = -velocidadEnBarra;
+                            velocidadEnBarra = 0;
                         }
                     }
                 });
