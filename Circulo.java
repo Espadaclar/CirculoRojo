@@ -19,6 +19,8 @@ import javafx.scene.shape.Rectangle;
 
 import javafx.scene.input.KeyCode;
  import javafx.scene.control.Label;
+ 
+
 /**
  * Write a description of class Circulo here.
  * 
@@ -44,7 +46,7 @@ public class Circulo extends Application
     public void start(Stage ventana){//parámetro que va ha ser la ventan de la aplicación
         Group root = new Group(); //contenedor que colocamos dentro de la escena.
 
-        Scene escena = new Scene(root, 500, 700, Color.YELLOW);//Se crea la escena con el contenedor que contiene los objetos.
+        Scene escena = new Scene(root, 600, 700, Color.YELLOW);//Se crea la escena con el contenedor que contiene los objetos.
         ventana.setScene(escena);//pasamos al parámetro ventana el objeto escena.
 
         //////////////////////////////para pasar coordenadas aleatorias a la situación inicias del círculo:
@@ -66,8 +68,7 @@ public class Circulo extends Application
         Rectangle rectangulo = new Rectangle();
         rectangulo.setLayoutY(600);
         rectangulo.setLayoutX(220);
-        //         rectangulo.setLayoutY(470);
-        //         rectangulo.setLayoutX(220);
+
         rectangulo.setWidth(150);
         rectangulo.setHeight(10);
         root.getChildren().add(rectangulo);
@@ -95,19 +96,22 @@ public class Circulo extends Application
                             velocidadX = -velocidadX;
 
                         }
-
                         else if(circle.getBoundsInParent().getMinY() <=  0)
                         {
                             velocidadY = -velocidadY;
                         }
-                        else if(circle.getBoundsInParent().getMaxY() >= (escena.getHeight()))
+                        //      SI LA BOLA SE SALE POR ABAJO APARECE UN MENSAJE DE GANE OVER.
+                        else if(circle.getBoundsInParent().getMinY() >= (escena.getHeight()))
                         {
                             Label label1 = new Label();
                             label1.setText(" -- GANE  OVER -- ");        
-
-                            label1.setLayoutX(290);
+                            label1.setLayoutX(230);
                             label1.setLayoutY(350);
                             root.getChildren().add(label1);
+                            velocidadY = 0;
+                            velocidadX = 0;
+                            escena.setFill(Color.WHITE);
+                            rectangulo.setFill(Color.WHITE);
                         }
 
                         double rec_X = rectangulo.getBoundsInParent().getMaxX();
@@ -149,10 +153,12 @@ public class Circulo extends Application
 
                         /////para que la barra no se salga de los límites de la escena.
                         if(rectangulo.getBoundsInParent().getMinX() <= 0 ){
-                            velocidadEnBarra = 0;
+                           rectangulo.setTranslateX(rectangulo.getTranslateX() - velocidadEnBarra);
+                            //velocidadEnBarra = 0;
                         }
                         else if( rectangulo.getBoundsInParent().getMaxX() >= (escena.getWidth()) ){
-                            velocidadEnBarra = 0;
+                            rectangulo.setTranslateX(rectangulo.getTranslateX() - velocidadEnBarra);
+                            //velocidadEnBarra = 0;
                         }
                     }
                 });
@@ -162,3 +168,8 @@ public class Circulo extends Application
         ventana.show();
     }
 }
+
+
+
+
+
