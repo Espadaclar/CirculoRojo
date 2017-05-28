@@ -18,8 +18,7 @@ import java.util.Random;
 import javafx.scene.shape.Rectangle;
 
 import javafx.scene.input.KeyCode;
- import javafx.scene.control.Label;
- 
+import javafx.scene.control.Label;
 
 /**
  * Write a description of class Circulo here.
@@ -36,6 +35,13 @@ public class Circulo extends Application
     private int velocidadY = 1;
     //velocidad de la barra.
     private int velocidadEnBarra;
+    
+    //para crear un contador de tiempo
+    // private class constant and some variables
+    private static final Integer STARTTIME = 15;
+    private Timeline timeline;
+    private Label timerLabel = new Label();
+    private Integer timeSeconds = STARTTIME;
 
     public static void main(String[] args){
         //Esto se utiliza para ejecutar la aplicación 
@@ -48,7 +54,16 @@ public class Circulo extends Application
 
         Scene escena = new Scene(root, 600, 700, Color.YELLOW);//Se crea la escena con el contenedor que contiene los objetos.
         ventana.setScene(escena);//pasamos al parámetro ventana el objeto escena.
-
+        
+        /////////////// CREAR CONTADOR DE TIEMPO
+         // Configure the Label
+        timerLabel.setText(timeSeconds.toString());
+        timerLabel.setTextFill(Color.RED);
+        timerLabel.setStyle("-fx-font-size: 4em;");
+        timerLabel.setLayoutX(55);
+        timerLabel.setLayoutY(15);
+        
+        root.getChildren().add(timerLabel);
         //////////////////////////////para pasar coordenadas aleatorias a la situación inicias del círculo:
         Random ale = new Random();
         int coordenadaX = ale.nextInt(430) +10; 
@@ -66,7 +81,7 @@ public class Circulo extends Application
 
         //se crea un rectángulo
         Rectangle rectangulo = new Rectangle();
-        rectangulo.setLayoutY(600);
+        rectangulo.setLayoutY(560);
         rectangulo.setLayoutX(220);
 
         rectangulo.setWidth(150);
@@ -86,7 +101,7 @@ public class Circulo extends Application
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.setAutoReverse(true);
         //define un valor de movimiento en los ejes x / y.
-        KeyFrame kf = new KeyFrame(Duration.seconds(.001), new EventHandler<ActionEvent>() {
+        KeyFrame kf = new KeyFrame(Duration.seconds(.007), new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent event) {
 
                         circle.setTranslateX(circle.getTranslateX() + velocidadX);
@@ -141,19 +156,10 @@ public class Circulo extends Application
 
                         //PARA QUE SE MUEVA LA BARRA .
                         rectangulo.setTranslateX(rectangulo.getTranslateX() + velocidadEnBarra);
-                        //para controlar la barra con los botones de izquierda/derecha.
-                        root.setOnKeyPressed(event2 ->{
-                                if(event2.getCode() == KeyCode.RIGHT){
-                                    velocidadEnBarra = 1;
-                                }
-                                else if(event2.getCode() == KeyCode.LEFT){
-                                    velocidadEnBarra = -1;
-                                }
-                            });
 
                         /////para que la barra no se salga de los límites de la escena.
                         if(rectangulo.getBoundsInParent().getMinX() <= 0 ){
-                           rectangulo.setTranslateX(rectangulo.getTranslateX() - velocidadEnBarra);
+                            rectangulo.setTranslateX(rectangulo.getTranslateX() - velocidadEnBarra);
                             //velocidadEnBarra = 0;
                         }
                         else if( rectangulo.getBoundsInParent().getMaxX() >= (escena.getWidth()) ){
@@ -163,13 +169,19 @@ public class Circulo extends Application
                     }
                 });
 
+        //para controlar la barra con los botones de izquierda/derecha.
+        root.setOnKeyPressed(event  ->{
+                if(event .getCode() == KeyCode.RIGHT){
+                    velocidadEnBarra = 1;
+                }
+                else if(event .getCode() == KeyCode.LEFT){
+                    velocidadEnBarra = -1;
+                }
+            });
+
         timeline.getKeyFrames().add(kf);
         timeline.play();
         ventana.show();
     }
 }
-
-
-
-
 
