@@ -88,6 +88,42 @@ public class Circulo extends Application
         root.getChildren().add(rectangulo);
         rectangulo.setFill(Color.BLUE);
         //
+        
+        //////////////////////////////////////////SE CREAN VARIAS BARRITAS/////////////////SE CREAN VARIAS BARRITAS.....
+        
+        int ALTO_BARRITAS = 25;
+        int EJE_Y = 70;//-------------POSICIÓN ININCIAL DE LA 1º FILA DE BARRITAS EN EL EJE Y.
+        int NUM_BARRITAS_EN_Y = 1;// ---ES EL Nº DE FILAS.
+        int cont2 = 0;//// ------- CUENTA EL Nº DE FILAS DE BARRITAS que se van creando EN EL EJE Y.
+        for(int i = 0; i < NUM_BARRITAS_EN_Y; i ++ ){
+            int cont = 0;//--- CUANDO cont SEA == AL ANCHO DEL ESCENARIO EL BUCLE WHILE FINALIZA.
+            double sumBarritas = 0;// ---- ACUMULA LA SUMA DE LA LONGITUD DE LAS BARRITAS QUE SE VAN CREANDO.
+            while(cont != ANCHO_ESCENA ){
+                Random aleatorio = new Random();//-
+                Color color = new Color(aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble());
+
+                double barritas = aleatorio.nextInt(60) +70;//-- CADA BARRITA TIENE UNA LONGITUD ALEATORIA. 
+                Rectangle rectangulo2 = new Rectangle();
+                if(cont2 == i){//-- PASA LA COORDENDA Y DE LAS NUM_BARRITAS_EN_Y  FILAS DE BARRITAS EN EL EJE Y.
+                    rectangulo2.setLayoutY(EJE_Y + (i * ALTO_BARRITAS));
+                }
+                
+                //--- CONDICIÓN PARA HALLAR LA MENDIDA DE LA ÚLTIMA BARRITA EN LOS EJES Y.
+                if(sumBarritas >= (ANCHO_ESCENA-130) ){
+                    barritas = (ANCHO_ESCENA - sumBarritas);
+                    cont += barritas + sumBarritas;
+                }
+                rectangulo2.setLayoutX(sumBarritas);
+                rectangulo2.setWidth(barritas);//LONGITUD ALEATORIA DE LAS BARRITAS, EXCEPTO LA DE LA ÚLTIMA BARRITA.
+                rectangulo2.setHeight(ALTO_BARRITAS);
+                root.getChildren().add(rectangulo2);
+                rectangulo2.setFill(color);
+                sumBarritas += barritas;// ---- ACUMULA LA SUMA DE LA LONGITUD DE LAS BARRITAS QUE SE VAN CREANDO.
+                
+            }
+            cont2 ++;
+        }
+        
         /////////////////////////////////////////////////CREACIÃ“N DE UN BOTÃ“N
         Button boton = new Button("Stop / Move");
         boton.setDefaultButton(true);
