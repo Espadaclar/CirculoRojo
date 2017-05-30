@@ -20,6 +20,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.input.KeyCode;
 import javafx.scene.control.Label;
 
+//PARA CREAR EL CRONÓMETRO.
+import java.util.Timer;
+import java.util.TimerTask;
 /**
  * Write a description of class Circulo here.
  * 
@@ -35,13 +38,9 @@ public class Circulo extends Application
     private int velocidadY = 1;
     //velocidad de la barra.
     private int velocidadEnBarra;
-    
+
     //para crear un contador de tiempo
-    // private class constant and some variables
-    private static final Integer STARTTIME = 15;
-    private Timeline timeline;
-    private Label timerLabel = new Label();
-    private Integer timeSeconds = STARTTIME;
+    private int tiempoEnSegundos ;
 
     public static void main(String[] args){
         //Esto se utiliza para ejecutar la aplicaciÃ³n 
@@ -50,24 +49,24 @@ public class Circulo extends Application
     }
 
     public void start(Stage ventana){//parÃ¡metro que va ha ser la ventan de la aplicaciÃ³n
+        int ANCHO_ESCENA = 700;
+        int ALTO_ESCENA = 600;
         Group root = new Group(); //contenedor que colocamos dentro de la escena.
 
-        Scene escena = new Scene(root, 600, 700, Color.YELLOW);//Se crea la escena con el contenedor que contiene los objetos.
+        Scene escena = new Scene(root, ANCHO_ESCENA, ALTO_ESCENA, Color.YELLOW);//Se crea la escena con el contenedor que contiene los objetos.
         ventana.setScene(escena);//pasamos al parÃ¡metro ventana el objeto escena.
-        
+
         /////////////// CREAR CONTADOR DE TIEMPO
-         // Configure the Label
-        timerLabel.setText(timeSeconds.toString());
-        timerLabel.setTextFill(Color.RED);
-        timerLabel.setStyle("-fx-font-size: 4em;");
-        timerLabel.setLayoutX(55);
-        timerLabel.setLayoutY(15);
-        
-        root.getChildren().add(timerLabel);
+        Label tiempoPasado = new Label("0");
+        root.getChildren().add(tiempoPasado);
+        tiempoPasado.setStyle("-fx-font-size: 3em;");
+        tiempoPasado.setLayoutX(55);
+        tiempoPasado.setLayoutY(15);
+
         //////////////////////////////para pasar coordenadas aleatorias a la situaciÃ³n inicias del cÃ­rculo:
         Random ale = new Random();
-        int coordenadaX = ale.nextInt(430) +10; 
-        int coordenadaY = ale.nextInt(430) +10; 
+        int coordenadaX = ale.nextInt(ANCHO_ESCENA - 10) +10; 
+        int coordenadaY = ale.nextInt(ALTO_ESCENA - 10) +10; 
         float RADIO = 20.0f;
         //Se crea el cÃ­rculo
         Circle circle = new Circle();
@@ -81,8 +80,8 @@ public class Circulo extends Application
 
         //se crea un rectÃ¡ngulo
         Rectangle rectangulo = new Rectangle();
-        rectangulo.setLayoutY(560);
-        rectangulo.setLayoutX(220);
+        rectangulo.setLayoutY(ALTO_ESCENA -40);
+        rectangulo.setLayoutX(ANCHO_ESCENA /2);
 
         rectangulo.setWidth(150);
         rectangulo.setHeight(10);
@@ -93,7 +92,7 @@ public class Circulo extends Application
         Button boton = new Button("Stop / Move");
         boton.setDefaultButton(true);
         boton.setLayoutX(15);
-        boton.setLayoutY(15);
+        boton.setLayoutY(ALTO_ESCENA -25);
         boton.setPrefSize(100, 18);
         root.getChildren().add(boton);
 
@@ -116,17 +115,19 @@ public class Circulo extends Application
                             velocidadY = -velocidadY;
                         }
                         //      SI LA BOLA SE SALE POR ABAJO APARECE UN MENSAJE DE GANE OVER.
-                        else if(circle.getBoundsInParent().getMinY() >= (escena.getHeight()))
+                        else if(circle.getBoundsInParent().getMaxY() >= (escena.getHeight()))
                         {
                             Label label1 = new Label();
                             label1.setText(" -- GANE  OVER -- ");        
-                            label1.setLayoutX(230);
-                            label1.setLayoutY(350);
+                            label1.setLayoutX( (ANCHO_ESCENA /2) -90);
+                            label1.setLayoutY(ALTO_ESCENA /2);
+                            label1.setTextFill(Color.RED);
+                            label1.setStyle("-fx-font-size: 2em;");
                             root.getChildren().add(label1);
                             velocidadY = 0;
                             velocidadX = 0;
                             escena.setFill(Color.WHITE);
-                            rectangulo.setFill(Color.WHITE);
+                            timeline.stop();//PARA EL CRONOMETRO CUANDO TERMINA LA PARTIDA.
                         }
 
                         double rec_X = rectangulo.getBoundsInParent().getMaxX();
@@ -154,6 +155,11 @@ public class Circulo extends Application
                             }
                         }
 
+                        /// ACTUALIZA LAS ETIQUETAS DE TIEMPOPASADO
+                        int minutos = tiempoEnSegundos / 60;
+                        int segundos = tiempoEnSegundos % 60;
+                        tiempoPasado.setText(minutos + ":" + segundos);  
+
                         //PARA QUE SE MUEVA LA BARRA .
                         rectangulo.setTranslateX(rectangulo.getTranslateX() + velocidadEnBarra);
 
@@ -179,9 +185,35 @@ public class Circulo extends Application
                 }
             });
 
+        //////////////////////  PARA ACTIVAR Y DESACTIVAR EL BOTÓN CUANDO ÉSTE ESTÁ ACTIVADO.
+        boton.setOnAction(event2 -> {
+                if (timeline.getStatus() == Status.PAUSED){
+                    timeline.play();
+                }
+                else{
+                    timeline.pause();
+                }
+            });
+
         timeline.getKeyFrames().add(kf);
         timeline.play();
         ventana.show();
+
+        //La clase Timer permite definir una tarea en un intervalo0o de tiempl
+        //TimerTask nos pide un metodo abstracto¡¡¡¡
+        TimerTask tarea = new TimerTask(){
+                //creacion de una clase anonima que va a heredar de TimerTask, va ha ser hija de ella
+                //en esa clase anónima definimos el mt de la interface
+                @Override
+                public void run(){
+                    //esto se actualiza en el KeiFrem
+                    tiempoEnSegundos++; 
+                }
+
+            };
+        //ahora necesito crear un obfeto Timer 
+        Timer timer = new Timer();
+        timer.schedule(tarea, 0, 1000);//cada cierto tiempo sale lo que se codifiqwu
     }
 }
 
