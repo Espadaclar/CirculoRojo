@@ -117,6 +117,7 @@ public class Circulo extends Application
                 rectangulo2.setWidth(barritas);//LONGITUD ALEATORIA DE LAS BARRITAS, EXCEPTO LA DE LA ÚLTIMA BARRITA.
                 rectangulo2.setHeight(ALTO_BARRITAS);
                 root.getChildren().add(rectangulo2);
+                rectangulo2.setStroke(Color.BLACK);
                 rectangulo2.setFill(color);
                 sumBarritas += barritas;// ---- ACUMULA LA SUMA DE LA LONGITUD DE LAS BARRITAS QUE SE VAN CREANDO.
                 
