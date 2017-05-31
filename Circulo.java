@@ -23,6 +23,8 @@ import javafx.scene.control.Label;
 //PARA CREAR EL CRON”METRO.
 import java.util.Timer;
 import java.util.TimerTask;
+
+import java.util.ArrayList;
 /**
  * Write a description of class Circulo here.
  * 
@@ -49,6 +51,9 @@ public class Circulo extends Application
     }
 
     public void start(Stage ventana){//par√°metro que va ha ser la ventan de la aplicaci√≥n
+         Random aleatorio = new Random();//-
+        ArrayList<Rectangle> rectangulos = new ArrayList<>();
+        
         int ANCHO_ESCENA = 700;
         int ALTO_ESCENA = 600;
         Group root = new Group(); //contenedor que colocamos dentro de la escena.
@@ -90,41 +95,65 @@ public class Circulo extends Application
         //
         
         //////////////////////////////////////////SE CREAN VARIAS BARRITAS/////////////////SE CREAN VARIAS BARRITAS.....
-        
         int ALTO_BARRITAS = 25;
-        int EJE_Y = 70;//-------------POSICI”N ININCIAL DE LA 1∫ FILA DE BARRITAS EN EL EJE Y.
-        int NUM_BARRITAS_EN_Y = 1;// ---ES EL N∫ DE FILAS.
+        int EJE_Y = 50;//-------------POSICI”N ININCIAL DE LA 1∫ FILA DE BARRITAS EN EL EJE Y.
+        int NUM_FILAS_EN_Y = 4;// ---ES EL N∫ DE FILAS.
+        int BARRITAS_EN_Y = 7;
         int cont2 = 0;//// ------- CUENTA EL N∫ DE FILAS DE BARRITAS que se van creando EN EL EJE Y.
-        for(int i = 0; i < NUM_BARRITAS_EN_Y; i ++ ){
-            int cont = 0;//--- CUANDO cont SEA == AL ANCHO DEL ESCENARIO EL BUCLE WHILE FINALIZA.
-            double sumBarritas = 0;// ---- ACUMULA LA SUMA DE LA LONGITUD DE LAS BARRITAS QUE SE VAN CREANDO.
-            while(cont != ANCHO_ESCENA ){
-                Random aleatorio = new Random();//-
-                Color color = new Color(aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble());
+        //--CADA VEZ QUE SE HA CREADO UNA FILA DESPLAZA LA COORDENADA EN Y, PARA LA SIGUIENTE FILA
+        if(BARRITAS_EN_Y == 0){ // -------------SE CREAN ALEATORIAMENTE.
+            for(int i = 0; i < NUM_FILAS_EN_Y; i ++ ){
+                int cont = 0;//--- CUANDO cont SEA == AL ANCHO DEL ESCENARIO EL BUCLE WHILE FINALIZA.
+                double sumBarritas = 0;// ---- ACUMULA LA SUMA DE LA LONGITUD DE LAS BARRITAS QUE SE VAN CREANDO.
+                while(cont != ANCHO_ESCENA ){
+                    // Random aleatorio = new Random();//-
+                    Color color = new Color(aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble());
 
-                double barritas = aleatorio.nextInt(60) +70;//-- CADA BARRITA TIENE UNA LONGITUD ALEATORIA. 
-                Rectangle rectangulo2 = new Rectangle();
-                if(cont2 == i){//-- PASA LA COORDENDA Y DE LAS NUM_BARRITAS_EN_Y  FILAS DE BARRITAS EN EL EJE Y.
-                    rectangulo2.setLayoutY(EJE_Y + (i * ALTO_BARRITAS));
+                    double barritas = aleatorio.nextInt(60) +70;//-- CADA BARRITA TIENE UNA LONGITUD ALEATORIA. 
+                    Rectangle rectangulo2 = new Rectangle();
+                    if(cont2 == i){//-- PASA LA COORDENDA Y DE LAS NUM_BARRITAS_EN_Y  FILAS DE BARRITAS EN EL EJE Y.
+                        rectangulo2.setLayoutY(EJE_Y + (cont2 * ALTO_BARRITAS));
+                    }
+
+                    //--- CONDICI”N PARA HALLAR LA MENDIDA DE LA ⁄LTIMA BARRITA EN LOS EJES Y.
+                    if(sumBarritas >= (ANCHO_ESCENA-130) ){
+                        barritas = (ANCHO_ESCENA - sumBarritas);
+                        cont += barritas + sumBarritas;
+                    }
+                    rectangulo2.setLayoutX(sumBarritas);
+                    rectangulo2.setWidth(barritas);//LONGITUD ALEATORIA DE LAS BARRITAS, EXCEPTO LA DE LA ⁄LTIMA BARRITA.
+                    rectangulo2.setHeight(ALTO_BARRITAS);
+                    root.getChildren().add(rectangulo2);
+                    rectangulo2.setStroke(Color.BLACK);
+                    rectangulo2.setFill(color);
+                    sumBarritas += barritas;// ---- ACUMULA LA SUMA DE LA LONGITUD DE LAS BARRITAS QUE SE VAN CREANDO.
+
+                    rectangulos.add(rectangulo2);
                 }
-                
-                //--- CONDICI”N PARA HALLAR LA MENDIDA DE LA ⁄LTIMA BARRITA EN LOS EJES Y.
-                if(sumBarritas >= (ANCHO_ESCENA-130) ){
-                    barritas = (ANCHO_ESCENA - sumBarritas);
-                    cont += barritas + sumBarritas;
-                }
-                rectangulo2.setLayoutX(sumBarritas);
-                rectangulo2.setWidth(barritas);//LONGITUD ALEATORIA DE LAS BARRITAS, EXCEPTO LA DE LA ⁄LTIMA BARRITA.
-                rectangulo2.setHeight(ALTO_BARRITAS);
-                root.getChildren().add(rectangulo2);
-                rectangulo2.setStroke(Color.BLACK);
-                rectangulo2.setFill(color);
-                sumBarritas += barritas;// ---- ACUMULA LA SUMA DE LA LONGITUD DE LAS BARRITAS QUE SE VAN CREANDO.
-                
+
+                cont2 ++; //cont2 * ALTO_BARRITAS --> proporciona la coordenada de Y para cada fila.
             }
-            cont2 ++;
         }
-        
+        else{
+            int val = 0;
+            while(val < BARRITAS_EN_Y){
+                int largoR = aleatorio.nextInt(60) +70; //largo de la barra; aleatorio.
+                int coorX = aleatorio.nextInt(ANCHO_ESCENA - largoR) +largoR; //coordenada X de la barra, aleatoria.
+
+                Rectangle rectan = new Rectangle();
+                rectan.setLayoutX(coorX);
+                rectan.setLayoutY(EJE_Y);
+                rectan.setWidth(largoR);//LONGITUD ALEATORIA DE LAS BARRITAS, EXCEPTO LA DE LA ⁄LTIMA BARRITA.
+                rectan.setHeight(ALTO_BARRITAS);
+                root.getChildren().add(rectan);
+                rectan.setStroke(Color.BLACK);
+                rectan.setFill(Color.GREEN);
+
+                rectangulos.add(rectan);
+                val ++;
+            }
+            
+        }
         /////////////////////////////////////////////////CREACI√ìN DE UN BOT√ìN
         Button boton = new Button("Stop / Move");
         boton.setDefaultButton(true);
