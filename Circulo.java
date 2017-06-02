@@ -25,11 +25,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import java.util.ArrayList;
+import javafx.scene.shape.Shape;
 /**
- * Write a description of class Circulo here.
  * 
- * @author (your name) 
- * @version (a version number or a date)
  */
 public class Circulo extends Application 
 {
@@ -43,7 +41,7 @@ public class Circulo extends Application
 
     //para crear un contador de tiempo
     private int tiempoEnSegundos ;
-
+    private int eliminados = 0;
     public static void main(String[] args){
         //Esto se utiliza para ejecutar la aplicación 
         //es como el new Contructor()
@@ -51,20 +49,22 @@ public class Circulo extends Application
     }
 
     public void start(Stage ventana){//parámetro que va ha ser la ventan de la aplicación
-         Random aleatorio = new Random();//-
+        Random aleatorio = new Random();//-
         ArrayList<Rectangle> rectangulos = new ArrayList<>();
-        
-        int ANCHO_ESCENA = 700;
-        int ALTO_ESCENA = 600;
-        Group root = new Group(); //contenedor que colocamos dentro de la escena.
 
-        Scene escena = new Scene(root, ANCHO_ESCENA, ALTO_ESCENA, Color.YELLOW);//Se crea la escena con el contenedor que contiene los objetos.
+        int ANCHO_ESCENA = 400;
+        int ALTO_ESCENA = 700;
+        Group root = new Group(); //contenedor que colocamos dentro de la escena.
+        
+        
+        //Color colorEscena = new Color(aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble());
+        Scene escena = new Scene(root, ANCHO_ESCENA, ALTO_ESCENA, Color.WHITE);//Se crea la escena con el contenedor que contiene los objetos.
         ventana.setScene(escena);//pasamos al parámetro ventana el objeto escena.
 
         /////////////// CREAR CONTADOR DE TIEMPO
         Label tiempoPasado = new Label("0");
         root.getChildren().add(tiempoPasado);
-        tiempoPasado.setStyle("-fx-font-size: 3em;");
+        tiempoPasado.setStyle("-fx-font-size: 1em;");
         tiempoPasado.setLayoutX(55);
         tiempoPasado.setLayoutY(15);
 
@@ -73,15 +73,7 @@ public class Circulo extends Application
         int coordenadaX = ale.nextInt(ANCHO_ESCENA - 10) +10; 
         int coordenadaY = ale.nextInt(ALTO_ESCENA - 10) +10; 
         float RADIO = 20.0f;
-        //Se crea el círculo
-        Circle circle = new Circle();
-        circle.setCenterX(coordenadaX);
-        circle.setCenterY(coordenadaY);
-        circle.setCenterY(250.0f);
-        circle.setFill(Color.RED);
-        circle.setRadius(RADIO);
-        //coloca el círculo dentro del contenedor root.
-        root.getChildren().add(circle);
+        
 
         //se crea un rectángulo
         Rectangle rectangulo = new Rectangle();
@@ -93,12 +85,19 @@ public class Circulo extends Application
         root.getChildren().add(rectangulo);
         rectangulo.setFill(Color.BLUE);
         //
+
+         //PARA PODER MOSTRA EL N� DE  BARRITAS QUE SE VAN ELIMINANDO,
+        Label barritasEliminadas = new Label();
+        barritasEliminadas.setTranslateX(150);
+        root.getChildren().add(barritasEliminadas);
+        barritasEliminadas.setStyle("-fx-font-size: 1em;");
+         barritasEliminadas.setLayoutY(15);
         
         //////////////////////////////////////////SE CREAN VARIAS BARRITAS/////////////////SE CREAN VARIAS BARRITAS.....
         int ALTO_BARRITAS = 25;
         int EJE_Y = 50;//-------------POSICI�N ININCIAL DE LA 1� FILA DE BARRITAS EN EL EJE Y.
         int NUM_FILAS_EN_Y = 4;// ---ES EL N� DE FILAS.
-        int BARRITAS_EN_Y = 7;
+        int BARRITAS_EN_Y = 0;
         int cont2 = 0;//// ------- CUENTA EL N� DE FILAS DE BARRITAS que se van creando EN EL EJE Y.
         //--CADA VEZ QUE SE HA CREADO UNA FILA DESPLAZA LA COORDENADA EN Y, PARA LA SIGUIENTE FILA
         if(BARRITAS_EN_Y == 0){ // -------------SE CREAN ALEATORIAMENTE.
@@ -152,8 +151,19 @@ public class Circulo extends Application
                 rectangulos.add(rectan);
                 val ++;
             }
-            
+
         }
+        
+         //Se crea el circulo
+        Circle circle = new Circle();
+        circle.setCenterX(coordenadaX);
+        circle.setCenterY(coordenadaY);
+        circle.setCenterY(250.0f);
+        circle.setFill(Color.RED);
+        circle.setRadius(RADIO);
+        //coloca el círculo dentro del contenedor root.
+        root.getChildren().add(circle);
+        
         /////////////////////////////////////////////////CREACIÓN DE UN BOTÓN
         Button boton = new Button("Stop / Move");
         boton.setDefaultButton(true);
@@ -166,7 +176,7 @@ public class Circulo extends Application
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.setAutoReverse(true);
         //define un valor de movimiento en los ejes x / y.
-        KeyFrame kf = new KeyFrame(Duration.seconds(.007), new EventHandler<ActionEvent>() {
+        KeyFrame kf = new KeyFrame(Duration.seconds(0.002), new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent event) {
 
                         circle.setTranslateX(circle.getTranslateX() + velocidadX);
@@ -192,7 +202,7 @@ public class Circulo extends Application
                             root.getChildren().add(label1);
                             velocidadY = 0;
                             velocidadX = 0;
-                            escena.setFill(Color.WHITE);
+                            //escena.setFill(Color.WHITE);
                             timeline.stop();//PARA EL CRONOMETRO CUANDO TERMINA LA PARTIDA.
                         }
 
@@ -237,6 +247,19 @@ public class Circulo extends Application
                         else if( rectangulo.getBoundsInParent().getMaxX() >= (escena.getWidth()) ){
                             rectangulo.setTranslateX(rectangulo.getTranslateX() - velocidadEnBarra);
                             //velocidadEnBarra = 0;
+                        }
+
+                        for(int i = 0; i < rectangulos.size(); i ++ ){
+                            Shape c = Shape.intersect(rectangulos.get(i), circle );
+                            if(c.getBoundsInParent().getWidth() != -1){
+                                rectangulos.get(i).setFill(Color.WHITE);
+                                rectangulos.get(i).setStroke(Color.WHITE);
+                                rectangulos.remove(i);
+                                velocidadY = -velocidadY;
+                                eliminados ++;
+
+                                barritasEliminadas.setText("Barritas eliminadas; " +eliminados);
+                            }
                         }
                     }
                 });
