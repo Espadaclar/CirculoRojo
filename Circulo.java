@@ -32,6 +32,7 @@ import javafx.scene.shape.Shape;
 public class Circulo extends Application 
 {
     private Circle cicle;
+    private float RADIO = 10.0f;
     private Rectangle rectangulo;
     //velocidad del c√≠rculo.
     private int velocidadX = 1;
@@ -39,9 +40,17 @@ public class Circulo extends Application
     //velocidad de la barra.
     private int velocidadEnBarra;
 
-    //para crear un contador de tiempo
+    //Contador de tiempo
     private int tiempoEnSegundos ;
     private int eliminados = 0;
+
+    //PARA ALTERAR EL N∫ Y LA FORMA DE MOSTRARSE LAS BARRITAS EN LA PANTALLA.... 
+    private int BARRITAS_ALEATORIAS_EN_Y = 40;//SI ES IGUAL A 0, NO APARECEN DE FORMA ALEATORIA Y 'NUM_FILAS_EN_Y y EJE_Y' SE ANULA.
+    private int ALTO_BARRITAS = 20;
+    private int EJE_Y = 50;//-POSICI”N ININCIAL DE LA 1∫ FILA DE BARRITAS EN EL EJE Y.
+    private int NUM_FILAS_EN_Y = 14;// ---ES EL N∫ DE FILAS QUE APARECERAN SI 'BARRITAS_ALEATORIAS_EN_Y' ES 0.
+    private int LARGO_RAQUETA = 70; // BARRA PARA TRATAR DE PARAR LA BOLA.
+    
     public static void main(String[] args){
         //Esto se utiliza para ejecutar la aplicaci√≥n 
         //es como el new Contructor()
@@ -52,109 +61,127 @@ public class Circulo extends Application
         Random aleatorio = new Random();//-
         ArrayList<Rectangle> rectangulos = new ArrayList<>();
 
-        int ANCHO_ESCENA = 400;
+        int ANCHO_ESCENA = 600;
         int ALTO_ESCENA = 700;
         Group root = new Group(); //contenedor que colocamos dentro de la escena.
         
-        
-        //Color colorEscena = new Color(aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble());
-        Scene escena = new Scene(root, ANCHO_ESCENA, ALTO_ESCENA, Color.WHITE);//Se crea la escena con el contenedor que contiene los objetos.
+        //Se crea la escena con el contenedor que contiene los objetos.
+        Scene escena = new Scene(root, ANCHO_ESCENA, ALTO_ESCENA, Color.WHITE);
         ventana.setScene(escena);//pasamos al par√°metro ventana el objeto escena.
 
-        /////////////// CREAR CONTADOR DE TIEMPO
+        // CONTADOR DE TIEMPO
         Label tiempoPasado = new Label("0");
         root.getChildren().add(tiempoPasado);
         tiempoPasado.setStyle("-fx-font-size: 1em;");
         tiempoPasado.setLayoutX(55);
         tiempoPasado.setLayoutY(15);
 
-        //////////////////////////////para pasar coordenadas aleatorias a la situaci√≥n inicias del c√≠rculo:
+        //para pasar coordenadas aleatorias a la situacion inicias del circulo:
         Random ale = new Random();
         int coordenadaX = ale.nextInt(ANCHO_ESCENA - 10) +10; 
         int coordenadaY = ale.nextInt(ALTO_ESCENA - 10) +10; 
-        float RADIO = 20.0f;
-        
 
-        //se crea un rect√°ngulo
+        //RECTANGULO RAQUETA PARA IR AL ENCUENTRO DE LA BOLA.
         Rectangle rectangulo = new Rectangle();
-        rectangulo.setLayoutY(ALTO_ESCENA -40);
-        rectangulo.setLayoutX(ANCHO_ESCENA /2);
-
-        rectangulo.setWidth(150);
+        rectangulo.setLayoutY(ALTO_ESCENA - 35);
+        rectangulo.setLayoutX(5);
+        rectangulo.setWidth(LARGO_RAQUETA);
         rectangulo.setHeight(10);
         root.getChildren().add(rectangulo);
         rectangulo.setFill(Color.BLUE);
-        //
 
-         //PARA PODER MOSTRA EL N∫ DE  BARRITAS QUE SE VAN ELIMINANDO,
+        // MueSTRA EL N∫ DE  BARRITAS QUE SE VAN ELIMINANDO,
         Label barritasEliminadas = new Label();
         barritasEliminadas.setTranslateX(150);
         root.getChildren().add(barritasEliminadas);
         barritasEliminadas.setStyle("-fx-font-size: 1em;");
-         barritasEliminadas.setLayoutY(15);
-        
-        //////////////////////////////////////////SE CREAN VARIAS BARRITAS/////////////////SE CREAN VARIAS BARRITAS.....
-        int ALTO_BARRITAS = 25;
-        int EJE_Y = 50;//-------------POSICI”N ININCIAL DE LA 1∫ FILA DE BARRITAS EN EL EJE Y.
-        int NUM_FILAS_EN_Y = 4;// ---ES EL N∫ DE FILAS.
-        int BARRITAS_EN_Y = 0;
-        int cont2 = 0;//// ------- CUENTA EL N∫ DE FILAS DE BARRITAS que se van creando EN EL EJE Y.
-        //--CADA VEZ QUE SE HA CREADO UNA FILA DESPLAZA LA COORDENADA EN Y, PARA LA SIGUIENTE FILA
-        if(BARRITAS_EN_Y == 0){ // -------------SE CREAN ALEATORIAMENTE.
-            for(int i = 0; i < NUM_FILAS_EN_Y; i ++ ){
-                int cont = 0;//--- CUANDO cont SEA == AL ANCHO DEL ESCENARIO EL BUCLE WHILE FINALIZA.
-                double sumBarritas = 0;// ---- ACUMULA LA SUMA DE LA LONGITUD DE LAS BARRITAS QUE SE VAN CREANDO.
-                while(cont != ANCHO_ESCENA ){
-                    // Random aleatorio = new Random();//-
-                    Color color = new Color(aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble());
+        barritasEliminadas.setLayoutY(10);
 
+        if(BARRITAS_ALEATORIAS_EN_Y == 0){
+            for(int i = 0; i < NUM_FILAS_EN_Y; i ++ ){
+                int sumaLongitudBarritas = 0;//--- CUANDO sumaLongitudBarritas SEA == AL ANCHO DEL ESCENARIO EL BUCLE WHILE FINALIZA.
+                double sumBarritas = 0;// ---- ACUMULA LA SUMA DE LA LONGITUD DE LAS BARRITAS QUE SE VAN CREANDO.
+                int cuentaFilasEnY = 0;//// ------- CUENTA EL N∫ DE FILAS DE BARRITAS que se van creando EN EL EJE Y.
+                                    //--CADA VEZ QUE SE HA CREADO UNA FILA DESPLAZA LA COORDENADA EN Y, PARA LA SIGUIENTE FILA
+                while(sumaLongitudBarritas != ANCHO_ESCENA ){
+                    Color color = new Color(aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble());
+                    
                     double barritas = aleatorio.nextInt(60) +70;//-- CADA BARRITA TIENE UNA LONGITUD ALEATORIA. 
                     Rectangle rectangulo2 = new Rectangle();
-                    if(cont2 == i){//-- PASA LA COORDENDA Y DE LAS NUM_BARRITAS_EN_Y  FILAS DE BARRITAS EN EL EJE Y.
-                        rectangulo2.setLayoutY(EJE_Y + (cont2 * ALTO_BARRITAS));
+                    if(cuentaFilasEnY == i){//-- PASA LA COORDENDA Y DE LAS NUM_BARRITAS_EN_Y  FILAS DE BARRITAS EN EL EJE Y.
+                        rectangulo2.setLayoutY(EJE_Y + (cuentaFilasEnY * ALTO_BARRITAS));
                     }
 
                     //--- CONDICI”N PARA HALLAR LA MENDIDA DE LA ⁄LTIMA BARRITA EN LOS EJES Y.
                     if(sumBarritas >= (ANCHO_ESCENA-130) ){
                         barritas = (ANCHO_ESCENA - sumBarritas);
-                        cont += barritas + sumBarritas;
+                        sumaLongitudBarritas += barritas + sumBarritas;
                     }
                     rectangulo2.setLayoutX(sumBarritas);
                     rectangulo2.setWidth(barritas);//LONGITUD ALEATORIA DE LAS BARRITAS, EXCEPTO LA DE LA ⁄LTIMA BARRITA.
                     rectangulo2.setHeight(ALTO_BARRITAS);
-                    root.getChildren().add(rectangulo2);
                     rectangulo2.setStroke(Color.BLACK);
                     rectangulo2.setFill(color);
                     sumBarritas += barritas;// ---- ACUMULA LA SUMA DE LA LONGITUD DE LAS BARRITAS QUE SE VAN CREANDO.
-
+                    root.getChildren().add(rectangulo2);
                     rectangulos.add(rectangulo2);
                 }
 
-                cont2 ++; //cont2 * ALTO_BARRITAS --> proporciona la coordenada de Y para cada fila.
+                cuentaFilasEnY ++; //cuentaFilasEnY * ALTO_BARRITAS --> proporciona la coordenada de Y para cada fila.
             }
         }
-        else{
+        else{///----------SI ELEGIMOS EL N∫ DE BARRITAS.
             int val = 0;
-            while(val < BARRITAS_EN_Y){
-                int largoR = aleatorio.nextInt(60) +70; //largo de la barra; aleatorio.
-                int coorX = aleatorio.nextInt(ANCHO_ESCENA - largoR) +largoR; //coordenada X de la barra, aleatoria.
-
+            while(val < BARRITAS_ALEATORIAS_EN_Y){
                 Rectangle rectan = new Rectangle();
-                rectan.setLayoutX(coorX);
-                rectan.setLayoutY(EJE_Y);
-                rectan.setWidth(largoR);//LONGITUD ALEATORIA DE LAS BARRITAS, EXCEPTO LA DE LA ⁄LTIMA BARRITA.
-                rectan.setHeight(ALTO_BARRITAS);
-                root.getChildren().add(rectan);
-                rectan.setStroke(Color.BLACK);
-                rectan.setFill(Color.GREEN);
+                int largoR = aleatorio.nextInt(60) +70; //largo de la barra; aleatorio.
+                int coorX = aleatorio.nextInt(ANCHO_ESCENA - (largoR *2) +largoR); //coordenada X de la barra, aleatoria.
+                int coorY =  aleatorio.nextInt(ALTO_ESCENA /2) +ALTO_BARRITAS;
+                if(rectangulos.isEmpty()){
+                    rectan.setLayoutX(coorX);
+                    rectan.setLayoutY(coorY);
+                    rectan.setWidth(largoR);
+                    rectan.setHeight(ALTO_BARRITAS);
+                    root.getChildren().add(rectan);
+                    rectan.setStroke(Color.BLACK);
+                    rectan.setFill(Color.GREEN);
 
-                rectangulos.add(rectan);
+                    rectangulos.add(rectan);
+                }
+                else if(!rectangulos.isEmpty()){
+                    boolean barritaValida = true;
+                    boolean add = false;
+                    while(barritaValida == true && add == false){
+                        Color color2 = new Color(aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble());
+                        rectan.setLayoutX(coorX);
+                        rectan.setLayoutY(coorY);
+                        rectan.setWidth(largoR);
+                        rectan.setHeight(ALTO_BARRITAS);
+                        rectan.setStroke(Color.BLACK);
+                        rectan.setFill(color2);
+
+                        for(int i = 0; i <rectangulos.size(); i ++){
+                            Shape c = Shape.intersect(rectangulos.get(i), rectan);
+                            if(c.getBoundsInParent().getWidth() != -1){
+                                barritaValida = false;
+                            }
+                        }
+                        if(barritaValida == true){
+                            rectangulos.add(rectan);
+                            root.getChildren().add(rectan); 
+                            add = true;
+                        }
+                        largoR = aleatorio.nextInt(60) +70; //largo de la barra; aleatorio.
+                        coorX = aleatorio.nextInt(ANCHO_ESCENA - largoR) +largoR; //coordenada X de la barra, aleatoria.
+                        coorY = aleatorio.nextInt(ALTO_ESCENA /2) +ALTO_BARRITAS;
+                    }
+
+                }
                 val ++;
             }
-
         }
-        
-         //Se crea el circulo
+
+        //Se crea el circulo
         Circle circle = new Circle();
         circle.setCenterX(coordenadaX);
         circle.setCenterY(coordenadaY);
@@ -163,7 +190,7 @@ public class Circulo extends Application
         circle.setRadius(RADIO);
         //coloca el c√≠rculo dentro del contenedor root.
         root.getChildren().add(circle);
-        
+
         /////////////////////////////////////////////////CREACI√ìN DE UN BOT√ìN
         Button boton = new Button("Stop / Move");
         boton.setDefaultButton(true);
@@ -176,7 +203,7 @@ public class Circulo extends Application
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.setAutoReverse(true);
         //define un valor de movimiento en los ejes x / y.
-        KeyFrame kf = new KeyFrame(Duration.seconds(0.002), new EventHandler<ActionEvent>() {
+        KeyFrame kf = new KeyFrame(Duration.seconds(0.001), new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent event) {
 
                         circle.setTranslateX(circle.getTranslateX() + velocidadX);
@@ -239,25 +266,55 @@ public class Circulo extends Application
                         //PARA QUE SE MUEVA LA BARRA .
                         rectangulo.setTranslateX(rectangulo.getTranslateX() + velocidadEnBarra);
 
-                        /////para que la barra no se salga de los l√≠mites de la escena.
+                        /////para que la barra no se salga de los limites de la escena.
                         if(rectangulo.getBoundsInParent().getMinX() <= 0 ){
                             rectangulo.setTranslateX(rectangulo.getTranslateX() - velocidadEnBarra);
-                            //velocidadEnBarra = 0;
                         }
                         else if( rectangulo.getBoundsInParent().getMaxX() >= (escena.getWidth()) ){
                             rectangulo.setTranslateX(rectangulo.getTranslateX() - velocidadEnBarra);
-                            //velocidadEnBarra = 0;
                         }
 
+                        //PARA ELIMINAR LAS BARRITAS AL COLISIONAR LA BOLA CON ELLAS.
                         for(int i = 0; i < rectangulos.size(); i ++ ){
-                            Shape c = Shape.intersect(rectangulos.get(i), circle );
+                            Shape c = Shape.intersect(rectangulos.get(i), circle);
+
+                            //COORDENADAS LATERALES DE CADA BARRITA Y DE LA BOLA.
+                            double longitud_Barrita = rectangulos.get(i).getWidth();
+                            double minimoDe_X_Barrita =  rectangulos.get(i).getBoundsInParent().getMinX();
+                            double maximo_X_Barrita =  minimoDe_X_Barrita + longitud_Barrita;
+                            double minimoDe_Y_Barrita = rectangulos.get(i).getBoundsInParent().getMinY();
+                            double maximoDe_Y_Barrita = rectangulos.get(i).getBoundsInParent().getMaxY();
+
+                            double maximoDe_X_Bolita = circle.getBoundsInParent().getMaxX() -0.5;
+                            double minimoDe_X_Bolita =  circle.getBoundsInParent().getMinX() -0.5;
+                            double maximoDe_Y_Bolita = circle.getBoundsInParent().getMaxY() ;
+                            double minimoDe_Y_Bolita = circle.getBoundsInParent().getMinY() ;
+
                             if(c.getBoundsInParent().getWidth() != -1){
                                 rectangulos.get(i).setFill(Color.WHITE);
                                 rectangulos.get(i).setStroke(Color.WHITE);
                                 rectangulos.remove(i);
-                                velocidadY = -velocidadY;
-                                eliminados ++;
 
+                                if( (maximoDe_X_Bolita ) == minimoDe_X_Barrita && maximoDe_Y_Bolita >= minimoDe_Y_Barrita &&
+                                minimoDe_Y_Bolita <= maximoDe_Y_Barrita ){
+                                    velocidadX = -velocidadX;                                  
+                                    eliminados ++;
+                                }
+                                else if( (maximoDe_X_Bolita +1) == minimoDe_X_Barrita && maximoDe_Y_Bolita >= minimoDe_Y_Barrita &&
+                                minimoDe_Y_Bolita <= maximoDe_Y_Barrita ){
+                                    velocidadX = -velocidadX;                                  
+                                    eliminados ++;
+                                }
+                                else if( (minimoDe_X_Bolita ) == (minimoDe_X_Barrita + longitud_Barrita)
+                                && maximoDe_Y_Bolita >= minimoDe_Y_Barrita &&
+                                minimoDe_Y_Bolita <= maximoDe_Y_Barrita){
+                                    velocidadX = -velocidadX;
+                                    eliminados ++;
+                                }
+                                else{
+                                    velocidadY = -velocidadY;
+                                    eliminados ++;
+                                }
                                 barritasEliminadas.setText("Barritas eliminadas; " +eliminados);
                             }
                         }
